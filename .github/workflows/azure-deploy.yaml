@@ -17,10 +17,13 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y sshpass
 
     - name: Remove existing code
-      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo rm -rf /var/www/html/*"
+      run: |
+        sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo rm -rf /var/www/html/*"
 
     - name: Copy new code
-      run: sshpass -p ${{ secrets.SSH_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./* ${{ secrets.SSH_USERNAME }}@74.249.117.190:/var/www/html/
+      run: |
+        sshpass -p ${{ secrets.SSH_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./* ${{ secrets.SSH_USERNAME }}@74.249.117.190:/tmp/
 
-    - name: Set ownership and permissions
-      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo chown -R faizanali:www-data /var/www/html/ && sudo chmod -R 755 /var/www/html/"
+    - name: Move code to destination directory
+      run: |
+        sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo mv /tmp/* /var/www/html/ && sudo chown -R faizanali:www-data /var/www/html/ && sudo chmod -R 755 /var/www/html/"
