@@ -1,26 +1,23 @@
-name: Deploy to Azure VM
+name: Deploy Website
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your main branch name if it's different
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      
+    - name: Install sshpass
+      run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    - name: Install SSH and sshpass
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openssh-client sshpass
+    - name: Remove existing code
+      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo rm -rf /var/www/html/*"
 
-    - name: Copy code to Azure VM
-      run: |
-        sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * faizanali@74.249.117.190:/var/www/html
-      env:
-        SSH_USER: user
-        VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
+    - name: Copy new code
+      run: sshpass -p ${{ secrets.SSH_PASSWORD }} scp -r ./* ${{ secrets.SSH_USERNAME }}@74.249.117.190:/var/www/html/
