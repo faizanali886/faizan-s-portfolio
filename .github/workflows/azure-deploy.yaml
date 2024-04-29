@@ -20,4 +20,7 @@ jobs:
       run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo rm -rf /var/www/html/*"
 
     - name: Copy new code
-      run: sshpass -p ${{ secrets.SSH_PASSWORD }} scp -r ./* ${{ secrets.SSH_USERNAME }}@74.249.117.190:/var/www/html/
+      run: sshpass -p ${{ secrets.SSH_PASSWORD }} scp -r -o StrictHostKeyChecking=no ./* ${{ secrets.SSH_USERNAME }}@74.249.117.190:/var/www/html/
+
+    - name: Set ownership and permissions
+      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@74.249.117.190 "sudo chown -R faizanali:www-data /var/www/html/ && sudo chmod -R 755 /var/www/html/"
