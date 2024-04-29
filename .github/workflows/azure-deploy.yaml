@@ -13,13 +13,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
     - name: Install SSH and sshpass
       run: |
-        apt-get update
-        apt-get install -y openssh-client sshpass
+        docker run --rm -v $PWD:/workspace -w /workspace ubuntu:latest bash -c 'apt-get update && apt-get install -y openssh-client sshpass'
 
     - name: Copy code to Azure VM
-      run: sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * user@azure_vm_ip:/var/www/html
+      run: |
+        docker run --rm -v $PWD:/workspace -w /workspace ubuntu:latest bash -c 'sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * user@azure_vm_ip:/var/www/html'
       env:
         SSH_USER: user
         VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
