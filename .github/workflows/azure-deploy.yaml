@@ -20,7 +20,7 @@ jobs:
 
     - name: Copy code to Azure VM
       run: |
-        sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * user@azure_vm_ip:/var/www/html
+        sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * faizanali@74.249.117.190:/var/www/html
       env:
         SSH_USER: user
         VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
