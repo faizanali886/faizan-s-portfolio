@@ -1,0 +1,25 @@
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH and sshpass
+      run: |
+        apt-get update
+        apt-get install -y openssh-client sshpass
+
+    - name: Copy code to Azure VM
+      run: sshpass -p ${{ secrets.VM_PASSWORD }} scp -r * user@azure_vm_ip:/var/www/html
+      env:
+        SSH_USER: user
+        VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
